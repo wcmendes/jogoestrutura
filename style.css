@@ -317,3 +317,38 @@ input[type="text"]:focus {
   color: var(--texto-suave);
   margin-top: 8px;
 }
+
+/* Rodapé */
+.rodape {
+  margin-top: 32px;
+  padding: 20px 16px;
+  border-top: 1px solid var(--borda);
+  text-align: center;
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.rodape p {
+  margin-bottom: 4px;
+}
+
+.rodape a {
+  color: var(--primaria);
+  text-decoration: none;
+}
+
+.rodape a:hover {
+  text-decoration: underline;
+}
+
+.rodape-links {
+  font-weight: 600;
+}
+
+.rodape-obs {
+  font-size: 0.78rem;
+  opacity: 0.8;
+  max-width: 520px;
+  margin: 8px auto 0;
+}
