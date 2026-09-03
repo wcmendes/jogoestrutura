@@ -256,11 +256,19 @@ function mostrarEventoAoVivo(evento) {
   box.appendChild(icone);
   box.appendChild(nome);
   box.appendChild(texto);
-  el.mural.prepend(box);
 
-  // Limita a quantidade visível
-  while (el.mural.children.length > 4) {
-    el.mural.removeChild(el.mural.lastChild);
+  // Insere logo após o título, mantendo os mais recentes no topo
+  const titulo = el.mural.querySelector(".mural-titulo");
+  if (titulo && titulo.nextSibling) {
+    el.mural.insertBefore(box, titulo.nextSibling);
+  } else {
+    el.mural.appendChild(box);
+  }
+
+  // Limita a quantidade de boxes visíveis (preserva o título)
+  const boxes = el.mural.querySelectorAll(".evento-ao-vivo");
+  for (let i = 4; i < boxes.length; i++) {
+    boxes[i].remove();
   }
 
   // Remove após a animação de saída terminar
