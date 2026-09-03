@@ -1,0 +1,117 @@
+// Camada de ranking: usa Supabase quando disponível, senão cai pro localStorage.
+// Também assina o Realtime para atualizar o ranking ao vivo.
+
+const Ranking = (() => {
+  const CHAVE_LOCAL = "ranking_estruturas";
+  let cliente = null;
+  let usandoSupabase = false;
+  let ouvintes = [];
+
+  // Inicializa o cliente Supabase se o SDK e a config existirem e forem válidos.
+  function init() {
+    try {
+      const temSDK = typeof window.supabase !== "undefined";
+      const temConfig =
+        typeof SUPABASE_URL === "string" &&
+        typeof SUPABASE_ANON_KEY === "string" &&
+        SUPABASE_URL.startsWith("http") &&
+        SUPABASE_ANON_KEY.length > 20;
+
+      if (temSDK && temConfig) {
+        cliente = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        usandoSupabase = true;
+      }
+    } catch (e) {
+      console.warn("Supabase indisponível, usando ranking local.", e);
+      usandoSupabase = false;
+    }
+  }
+
+  // ---------- localStorage helpers ----------
+  function lerLocal() {
+    try {
+      return JSON.parse(localStorage.getItem(CHAVE_LOCAL)) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  function salvarLocal(lista) {
+    localStorage.setItem(CHAVE_LOCAL, JSON.stringify(lista));
+  }
+
+  // ---------- API pública ----------
+
+  // Salva um resultado. Retorna o objeto salvo.
+  async function salvar(resultado) {
+    const registro = {
+      nome: resultado.nome,
+      pontos: resultado.pontos,
+      acertos: resultado.acertos,
+      erros: resultado.erros
+    };
+
+    if (usandoSupabase) {
+      try {
+        const { error } = await cliente.from("ranking").insert(registro);
+        if (error) throw error;
+        return registro;
+      } catch (e) {
+        console.warn("Falha ao salvar no Supabase, salvando local.", e);
+      }
+    }
+
+    const lista = lerLocal();
+    lista.push({ ...registro, criado_em: new Date().toISOString() });
+    salvarLocal(lista);
+    return registro;
+  }
+
+  // Busca o ranking ordenado (maior pontuação primeiro).
+  async function listar(limite = 10) {
+    if (usandoSupabase) {
+      try {
+        const { data, error } = await cliente
+          .from("ranking")
+          .select("nome, pontos, acertos, erros, criado_em")
+          .order("pontos", { ascending: false })
+          .order("criado_em", { ascending: true })
+          .limit(limite);
+        if (error) throw error;
+        return data || [];
+      } catch (e) {
+        console.warn("Falha ao ler do Supabase, lendo local.", e);
+      }
+    }
+
+    const lista = lerLocal().sort((a, b) => {
+      if (b.pontos !== a.pontos) return b.pontos - a.pontos;
+      return new Date(a.criado_em) - new Date(b.criado_em);
+    });
+    return lista.slice(0, limite);
+  }
+
+  // Assina mudanças em tempo real. callback é chamado quando alguém entra no ranking.
+  function aoAtualizar(callback) {
+    ouvintes.push(callback);
+
+    if (usandoSupabase && ouvintes.length === 1) {
+      cliente
+        .channel("ranking-ao-vivo")
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "ranking" },
+          () => ouvintes.forEach((cb) => cb())
+        )
+        .subscribe();
+    }
+  }
+
+  function estaOnline() {
+    return usandoSupabase;
+  }
+
+  init();
+
+  return { salvar, listar, aoAtualizar, estaOnline };
+})();

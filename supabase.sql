@@ -1,0 +1,49 @@
+-- =============================================================
+-- Configuração da tabela de ranking no Supabase
+-- Rode este script no painel: SQL Editor -> New query -> Run
+-- =============================================================
+
+-- 1) Tabela de ranking
+create table if not exists public.ranking (
+  id         bigint generated always as identity primary key,
+  nome       text not null check (char_length(nome) between 1 and 30),
+  pontos     integer not null default 0 check (pontos >= 0),
+  acertos    integer not null default 0 check (acertos >= 0),
+  erros      integer not null default 0 check (erros >= 0),
+  criado_em  timestamptz not null default now()
+);
+
+-- Índice para ordenar o ranking rápido (maior pontuação primeiro)
+create index if not exists ranking_pontos_idx
+  on public.ranking (pontos desc, criado_em asc);
+
+-- 2) Habilita Row Level Security
+alter table public.ranking enable row level security;
+
+-- 3) Políticas de acesso
+-- Qualquer visitante (anon) pode LER o ranking
+drop policy if exists "ranking_leitura_publica" on public.ranking;
+create policy "ranking_leitura_publica"
+  on public.ranking
+  for select
+  to anon, authenticated
+  using (true);
+
+-- Qualquer visitante (anon) pode INSERIR o próprio resultado
+drop policy if exists "ranking_insercao_publica" on public.ranking;
+create policy "ranking_insercao_publica"
+  on public.ranking
+  for insert
+  to anon, authenticated
+  with check (
+    char_length(nome) between 1 and 30
+    and pontos >= 0
+    and acertos >= 0
+    and erros >= 0
+  );
+
+-- Obs: não criamos policies de UPDATE nem DELETE.
+-- Sem elas, ninguém com a anon key pode editar ou apagar registros. Só inserir e ler.
+
+-- 4) Habilita Realtime para a tabela (ranking ao vivo)
+alter publication supabase_realtime add table public.ranking;

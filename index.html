@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Desafio das Estruturas de Dados</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Tela inicial -->
+    <section id="tela-inicio" class="tela ativa">
+      <h1>🎮 Desafio das Estruturas de Dados</h1>
+      <p class="subtitulo">Lista · Pilha · Fila · Vetor · Matriz · Registro</p>
+      <div class="card-inicio">
+        <label for="nome-jogador">Digite seu nome para começar:</label>
+        <input type="text" id="nome-jogador" placeholder="Ex: Maria Silva" maxlength="30" autocomplete="off" />
+        <button id="btn-iniciar" class="btn btn-primario">Começar 🚀</button>
+      </div>
+      <div class="ranking-preview">
+        <h2>🏆 Ranking</h2>
+        <ol id="ranking-inicio" class="lista-ranking"></ol>
+      </div>
+    </section>
+
+    <!-- Tela do jogo -->
+    <section id="tela-jogo" class="tela">
+      <header class="hud">
+        <div class="hud-item">👤 <span id="hud-nome"></span></div>
+        <div class="hud-item">⭐ <span id="hud-pontos">0</span> pts</div>
+        <div class="hud-item">✅ <span id="hud-acertos">0</span></div>
+        <div class="hud-item">❌ <span id="hud-erros">0</span></div>
+        <div class="hud-item">❓ <span id="hud-progresso">0/0</span></div>
+      </header>
+
+      <div class="barra-progresso"><div id="barra-preenchida"></div></div>
+
+      <div class="card-pergunta">
+        <span id="tag-estrutura" class="tag"></span>
+        <h2 id="enunciado"></h2>
+        <div id="opcoes" class="opcoes"></div>
+        <div id="feedback" class="feedback"></div>
+        <button id="btn-proxima" class="btn btn-primario" hidden>Próxima ➡️</button>
+      </div>
+    </section>
+
+    <!-- Tela final -->
+    <section id="tela-final" class="tela">
+      <h1>🎉 Fim de jogo!</h1>
+      <div class="card-resultado">
+        <p class="resultado-nome" id="resultado-nome"></p>
+        <p class="resultado-pontos"><span id="resultado-pontos">0</span> pontos</p>
+        <p class="resultado-detalhe">
+          <span id="resultado-acertos">0</span> acertos ·
+          <span id="resultado-erros">0</span> erros
+        </p>
+      </div>
+      <div class="ranking-preview">
+        <h2>🏆 Ranking</h2>
+        <ol id="ranking-final" class="lista-ranking"></ol>
+      </div>
+      <button id="btn-jogar-novamente" class="btn btn-primario">Jogar novamente 🔄</button>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="perguntas.js"></script>
+  <script src="ranking.js"></script>
+  <script src="jogo.js"></script>
+</body>
+</html>
