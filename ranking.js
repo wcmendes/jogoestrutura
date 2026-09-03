@@ -107,11 +107,42 @@ const Ranking = (() => {
     }
   }
 
+  // ---------- Feed de eventos ao vivo (acertos/erros durante o jogo) ----------
+
+  // Registra um evento de resposta. Se o Supabase estiver off, não faz nada
+  // (o feed ao vivo só faz sentido compartilhado).
+  async function registrarEvento(evento) {
+    if (!usandoSupabase) return;
+    try {
+      const { error } = await cliente.from("eventos").insert({
+        nome: evento.nome,
+        estrutura: evento.estrutura,
+        acertou: evento.acertou
+      });
+      if (error) throw error;
+    } catch (e) {
+      console.warn("Falha ao registrar evento ao vivo.", e);
+    }
+  }
+
+  // Assina o feed ao vivo. callback(evento) é chamado a cada nova resposta de qualquer jogador.
+  function aoEvento(callback) {
+    if (!usandoSupabase) return;
+    cliente
+      .channel("eventos-ao-vivo")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "eventos" },
+        (payload) => callback(payload.new)
+      )
+      .subscribe();
+  }
+
   function estaOnline() {
     return usandoSupabase;
   }
 
   init();
 
-  return { salvar, listar, aoAtualizar, estaOnline };
+  return { salvar, listar, aoAtualizar, registrarEvento, aoEvento, estaOnline };
 })();

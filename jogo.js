@@ -27,6 +27,7 @@ const el = {
   hudErros: document.getElementById("hud-erros"),
   hudProgresso: document.getElementById("hud-progresso"),
   barra: document.getElementById("barra-preenchida"),
+  mural: document.getElementById("mural-ao-vivo"),
   tag: document.getElementById("tag-estrutura"),
   figura: document.getElementById("figura"),
   enunciado: document.getElementById("enunciado"),
@@ -156,6 +157,8 @@ function responder(botao, acertou, explicacao) {
   const botoes = el.opcoes.querySelectorAll(".opcao");
   botoes.forEach((b) => (b.disabled = true));
 
+  const estruturaAtual = estado.perguntas[estado.indice].estrutura;
+
   if (acertou) {
     botao.classList.add("correta");
     estado.acertos++;
@@ -178,9 +181,51 @@ function responder(botao, acertou, explicacao) {
   el.hudAcertos.textContent = estado.acertos;
   el.hudErros.textContent = estado.erros;
 
+  // Registra o evento no feed ao vivo (todos os jogadores veem)
+  Ranking.registrarEvento({
+    nome: estado.nome,
+    estrutura: estruturaAtual,
+    acertou: acertou
+  });
+
   const ehUltima = estado.indice === estado.perguntas.length - 1;
   el.btnProxima.textContent = ehUltima ? "Ver resultado 🏁" : "Próxima ➡️";
   el.btnProxima.hidden = false;
+}
+
+// Mostra um box animado no mural ao vivo. Mantém no máximo 4 na tela.
+function mostrarEventoAoVivo(evento) {
+  if (!el.mural) return;
+
+  const box = document.createElement("div");
+  box.className = `evento-ao-vivo ${evento.acertou ? "ok" : "nok"}`;
+
+  const icone = document.createElement("span");
+  icone.className = "ev-icone";
+  icone.textContent = evento.acertou ? "✅" : "❌";
+
+  const nome = document.createElement("span");
+  nome.className = "ev-nome";
+  nome.textContent = evento.nome;
+
+  const texto = document.createElement("span");
+  texto.className = "ev-texto";
+  texto.textContent = evento.acertou
+    ? `acertou uma de ${evento.estrutura}!`
+    : `errou uma de ${evento.estrutura}.`;
+
+  box.appendChild(icone);
+  box.appendChild(nome);
+  box.appendChild(texto);
+  el.mural.prepend(box);
+
+  // Limita a quantidade visível
+  while (el.mural.children.length > 4) {
+    el.mural.removeChild(el.mural.lastChild);
+  }
+
+  // Remove após a animação de saída terminar
+  setTimeout(() => box.remove(), 4200);
 }
 
 function proximaPergunta() {
@@ -228,6 +273,14 @@ el.btnNovamente.addEventListener("click", () => {
 Ranking.aoAtualizar(() => {
   if (el.telaInicio.classList.contains("ativa")) renderizarRanking(el.rankingInicio);
   if (el.telaFinal.classList.contains("ativa")) renderizarRanking(el.rankingFinal, estado.nome);
+});
+
+// Feed ao vivo: mostra acertos/erros de qualquer jogador enquanto você joga.
+Ranking.aoEvento((evento) => {
+  // Só mostra na tela de jogo (é onde o mural existe)
+  if (el.telaJogo.classList.contains("ativa")) {
+    mostrarEventoAoVivo(evento);
+  }
 });
 
 // Ao carregar

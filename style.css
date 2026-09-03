@@ -352,3 +352,56 @@ input[type="text"]:focus {
   max-width: 520px;
   margin: 8px auto 0;
 }
+
+/* Mural ao vivo (feed de acertos/erros) */
+.mural-ao-vivo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+  min-height: 0;
+}
+
+.evento-ao-vivo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--borda);
+  background: var(--bg-card);
+  font-size: 0.9rem;
+  animation: entrar-evento 0.35s ease, sair-evento 0.4s ease 3.6s forwards;
+}
+
+.evento-ao-vivo.ok {
+  border-color: var(--acerto);
+  background: rgba(46, 204, 113, 0.12);
+}
+
+.evento-ao-vivo.nok {
+  border-color: var(--erro);
+  background: rgba(231, 76, 60, 0.12);
+}
+
+.evento-ao-vivo .ev-icone {
+  font-size: 1.1rem;
+}
+
+.evento-ao-vivo .ev-nome {
+  font-weight: 700;
+  color: var(--texto);
+}
+
+.evento-ao-vivo .ev-texto {
+  color: var(--texto-suave);
+}
+
+@keyframes entrar-evento {
+  from { opacity: 0; transform: translateX(-16px) scale(0.98); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes sair-evento {
+  to { opacity: 0; transform: translateY(-8px); height: 0; padding: 0; margin: 0; border-width: 0; }
+}
