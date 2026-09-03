@@ -28,6 +28,7 @@ const el = {
   hudProgresso: document.getElementById("hud-progresso"),
   barra: document.getElementById("barra-preenchida"),
   tag: document.getElementById("tag-estrutura"),
+  figura: document.getElementById("figura"),
   enunciado: document.getElementById("enunciado"),
   opcoes: document.getElementById("opcoes"),
   feedback: document.getElementById("feedback"),
@@ -122,6 +123,14 @@ function mostrarPergunta() {
   const p = estado.perguntas[estado.indice];
 
   el.tag.textContent = p.estrutura;
+  // Figura (SVG) opcional da pergunta
+  if (p.figura) {
+    el.figura.innerHTML = p.figura;
+    el.figura.hidden = false;
+  } else {
+    el.figura.innerHTML = "";
+    el.figura.hidden = true;
+  }
   el.enunciado.textContent = p.enunciado;
   el.feedback.textContent = "";
   el.feedback.className = "feedback";

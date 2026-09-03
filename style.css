@@ -175,6 +175,26 @@ input[type="text"]:focus {
   margin-bottom: 12px;
 }
 
+.figura {
+  display: flex;
+  justify-content: center;
+  background: var(--bg-card-2);
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.figura[hidden] {
+  display: none;
+}
+
+.figura .fig {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+}
+
 #enunciado {
   font-size: 1.25rem;
   line-height: 1.4;
