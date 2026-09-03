@@ -89,3 +89,25 @@ create policy "eventos_insercao_publica"
 
 -- Habilita Realtime para o feed ao vivo
 alter publication supabase_realtime add table public.eventos;
+
+-- =============================================================
+-- 6) Permissão de limpeza (usada pela página /admin)
+-- ATENÇÃO: isto libera o DELETE para a anon key nas duas tabelas.
+-- Como é um jogo de sala de aula, a proteção do botão é feita no
+-- frontend (confirmação). Se quiser travar de verdade, remova estas
+-- policies e limpe pelo painel com:
+--   truncate public.ranking, public.eventos restart identity;
+-- =============================================================
+drop policy if exists "ranking_limpeza" on public.ranking;
+create policy "ranking_limpeza"
+  on public.ranking
+  for delete
+  to anon, authenticated
+  using (true);
+
+drop policy if exists "eventos_limpeza" on public.eventos;
+create policy "eventos_limpeza"
+  on public.eventos
+  for delete
+  to anon, authenticated
+  using (true);

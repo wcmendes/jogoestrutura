@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Admin · Desafio das Estruturas de Dados</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <section class="tela ativa">
+      <h1>🛠️ Administração</h1>
+      <p class="subtitulo">Limpar ranking e eventos entre as turmas</p>
+
+      <div class="card-inicio">
+        <p style="color: var(--texto-suave); line-height: 1.5;">
+          Este botão apaga <b>todo o ranking</b> e <b>todos os eventos</b> do jogo.
+          A ação não pode ser desfeita.
+        </p>
+        <label for="confirmar">Para confirmar, digite <b>APAGAR</b> abaixo:</label>
+        <input type="text" id="confirmar" placeholder="APAGAR" autocomplete="off" />
+        <button id="btn-limpar" class="btn btn-primario" disabled>Apagar tudo 🗑️</button>
+        <p id="status-admin" class="feedback"></p>
+      </div>
+
+      <div class="ranking-preview">
+        <h2>🏆 Ranking atual</h2>
+        <ol id="ranking-admin" class="lista-ranking"></ol>
+      </div>
+
+      <a href="index.html" style="color: var(--primaria);">← Voltar para o jogo</a>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="perguntas.js"></script>
+  <script src="ranking.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

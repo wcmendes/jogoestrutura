@@ -138,11 +138,24 @@ const Ranking = (() => {
       .subscribe();
   }
 
+  // Apaga TODO o ranking e os eventos. Usado pela página /admin.
+  async function limparTudo() {
+    if (usandoSupabase) {
+      // gt.0 num id sempre-positivo = todas as linhas
+      const r1 = await cliente.from("eventos").delete().gt("id", 0);
+      const r2 = await cliente.from("ranking").delete().gt("id", 0);
+      if (r1.error) throw r1.error;
+      if (r2.error) throw r2.error;
+      return;
+    }
+    localStorage.removeItem(CHAVE_LOCAL);
+  }
+
   function estaOnline() {
     return usandoSupabase;
   }
 
   init();
 
-  return { salvar, listar, aoAtualizar, registrarEvento, aoEvento, estaOnline };
+  return { salvar, listar, aoAtualizar, registrarEvento, aoEvento, limparTudo, estaOnline };
 })();
