@@ -35,15 +35,26 @@
 
       <div class="barra-progresso"><div id="barra-preenchida"></div></div>
 
-      <div id="mural-ao-vivo" class="mural-ao-vivo" aria-live="polite"></div>
+      <div class="layout-jogo">
+        <div class="coluna-jogo">
+          <div id="mural-ao-vivo" class="mural-ao-vivo" aria-live="polite"></div>
 
-      <div class="card-pergunta">
-        <span id="tag-estrutura" class="tag"></span>
-        <div id="figura" class="figura"></div>
-        <h2 id="enunciado"></h2>
-        <div id="opcoes" class="opcoes"></div>
-        <div id="feedback" class="feedback"></div>
-        <button id="btn-proxima" class="btn btn-primario" hidden>Próxima ➡️</button>
+          <div class="card-pergunta">
+            <span id="tag-estrutura" class="tag"></span>
+            <div id="figura" class="figura"></div>
+            <h2 id="enunciado"></h2>
+            <div id="opcoes" class="opcoes"></div>
+            <div id="feedback" class="feedback"></div>
+            <button id="btn-proxima" class="btn btn-primario" hidden>Próxima ➡️</button>
+          </div>
+        </div>
+
+        <aside class="coluna-ranking">
+          <div class="ranking-preview ranking-jogo">
+            <h2>🏆 Ranking ao vivo</h2>
+            <ol id="ranking-jogo" class="lista-ranking"></ol>
+          </div>
+        </aside>
       </div>
     </section>
 

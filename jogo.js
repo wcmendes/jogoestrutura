@@ -34,6 +34,7 @@ const el = {
   opcoes: document.getElementById("opcoes"),
   feedback: document.getElementById("feedback"),
   rankingInicio: document.getElementById("ranking-inicio"),
+  rankingJogo: document.getElementById("ranking-jogo"),
   rankingFinal: document.getElementById("ranking-final"),
   resultadoNome: document.getElementById("resultado-nome"),
   resultadoPontos: document.getElementById("resultado-pontos"),
@@ -107,6 +108,7 @@ function iniciarJogo() {
   el.hudNome.textContent = nome;
   atualizarHud();
   trocarTela(el.telaJogo);
+  renderizarRanking(el.rankingJogo, estado.nome);
   mostrarPergunta();
 }
 
@@ -272,6 +274,7 @@ el.btnNovamente.addEventListener("click", () => {
 // Atualização em tempo real: quando alguém termina, atualiza os rankings visíveis.
 Ranking.aoAtualizar(() => {
   if (el.telaInicio.classList.contains("ativa")) renderizarRanking(el.rankingInicio);
+  if (el.telaJogo.classList.contains("ativa")) renderizarRanking(el.rankingJogo, estado.nome);
   if (el.telaFinal.classList.contains("ativa")) renderizarRanking(el.rankingFinal, estado.nome);
 });
 

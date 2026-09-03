@@ -405,3 +405,42 @@ input[type="text"]:focus {
 @keyframes sair-evento {
   to { opacity: 0; transform: translateY(-8px); height: 0; padding: 0; margin: 0; border-width: 0; }
 }
+
+/* Layout da tela de jogo: pergunta + ranking lateral */
+.layout-jogo {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (min-width: 860px) {
+  .container {
+    max-width: 1040px;
+  }
+  .layout-jogo {
+    grid-template-columns: minmax(0, 1fr) 300px;
+  }
+  .coluna-ranking {
+    position: sticky;
+    top: 16px;
+  }
+}
+
+.ranking-jogo {
+  margin-bottom: 0;
+}
+
+.ranking-jogo h2 {
+  font-size: 1.05rem;
+}
+
+/* Destaca mudança quando o ranking atualiza ao vivo */
+.lista-ranking li.piscar {
+  animation: piscar-rk 0.8s ease;
+}
+
+@keyframes piscar-rk {
+  0% { background: rgba(108, 92, 231, 0.4); }
+  100% { background: var(--bg-card-2); }
+}
