@@ -88,6 +88,43 @@ async function renderizarRanking(ulElement, destacarNome = "") {
   });
 }
 
+// Renderiza o ranking AO VIVO (pontuação parcial calculada dos eventos) na tela de jogo.
+async function renderizarRankingAoVivo() {
+  if (!el.rankingJogo) return;
+
+  // Se estiver offline (sem Supabase), usa o ranking final salvo como fallback.
+  const lista = Ranking.estaOnline()
+    ? await Ranking.rankingAoVivo(PONTOS_POR_ACERTO, 10)
+    : await Ranking.listar(10);
+
+  el.rankingJogo.innerHTML = "";
+
+  if (!lista.length) {
+    const li = document.createElement("li");
+    li.className = "vazio";
+    li.textContent = "Ninguém pontuou ainda. Vai você!";
+    el.rankingJogo.appendChild(li);
+    return;
+  }
+
+  lista.forEach((r) => {
+    const li = document.createElement("li");
+    if (r.nome === estado.nome) li.classList.add("eu");
+
+    const nome = document.createElement("span");
+    nome.className = "rk-nome";
+    nome.textContent = r.nome;
+
+    const pontos = document.createElement("span");
+    pontos.className = "rk-pontos";
+    pontos.textContent = `${r.pontos} pts`;
+
+    li.appendChild(nome);
+    li.appendChild(pontos);
+    el.rankingJogo.appendChild(li);
+  });
+}
+
 // ---------- Fluxo do jogo ----------
 function iniciarJogo() {
   const nome = el.nomeInput.value.trim();
@@ -108,7 +145,7 @@ function iniciarJogo() {
   el.hudNome.textContent = nome;
   atualizarHud();
   trocarTela(el.telaJogo);
-  renderizarRanking(el.rankingJogo, estado.nome);
+  renderizarRankingAoVivo();
   mostrarPergunta();
 }
 
@@ -274,7 +311,7 @@ el.btnNovamente.addEventListener("click", () => {
 // Atualização em tempo real: quando alguém termina, atualiza os rankings visíveis.
 Ranking.aoAtualizar(() => {
   if (el.telaInicio.classList.contains("ativa")) renderizarRanking(el.rankingInicio);
-  if (el.telaJogo.classList.contains("ativa")) renderizarRanking(el.rankingJogo, estado.nome);
+  if (el.telaJogo.classList.contains("ativa")) renderizarRankingAoVivo();
   if (el.telaFinal.classList.contains("ativa")) renderizarRanking(el.rankingFinal, estado.nome);
 });
 
@@ -283,6 +320,8 @@ Ranking.aoEvento((evento) => {
   // Só mostra na tela de jogo (é onde o mural existe)
   if (el.telaJogo.classList.contains("ativa")) {
     mostrarEventoAoVivo(evento);
+    // Atualiza o placar parcial na hora
+    renderizarRankingAoVivo();
   }
 });
 

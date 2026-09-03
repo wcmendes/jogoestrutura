@@ -125,6 +125,37 @@ const Ranking = (() => {
     }
   }
 
+  // Monta o ranking AO VIVO a partir dos eventos (pontuação parcial em tempo real).
+  // Cada acerto vale PONTOS_POR_ACERTO. Retorna [{nome, pontos, acertos, erros}] ordenado.
+  async function rankingAoVivo(pontosPorAcerto = 10, limite = 10) {
+    if (!usandoSupabase) return [];
+    try {
+      const { data, error } = await cliente
+        .from("eventos")
+        .select("nome, acertou")
+        .order("criado_em", { ascending: true });
+      if (error) throw error;
+
+      const porJogador = {};
+      (data || []).forEach((ev) => {
+        if (!porJogador[ev.nome]) porJogador[ev.nome] = { nome: ev.nome, pontos: 0, acertos: 0, erros: 0 };
+        if (ev.acertou) {
+          porJogador[ev.nome].acertos++;
+          porJogador[ev.nome].pontos += pontosPorAcerto;
+        } else {
+          porJogador[ev.nome].erros++;
+        }
+      });
+
+      return Object.values(porJogador)
+        .sort((a, b) => b.pontos - a.pontos || b.acertos - a.acertos)
+        .slice(0, limite);
+    } catch (e) {
+      console.warn("Falha ao montar ranking ao vivo.", e);
+      return [];
+    }
+  }
+
   // Assina o feed ao vivo. callback(evento) é chamado a cada nova resposta de qualquer jogador.
   function aoEvento(callback) {
     if (!usandoSupabase) return;
@@ -157,5 +188,5 @@ const Ranking = (() => {
 
   init();
 
-  return { salvar, listar, aoAtualizar, registrarEvento, aoEvento, limparTudo, estaOnline };
+  return { salvar, listar, rankingAoVivo, aoAtualizar, registrarEvento, aoEvento, limparTudo, estaOnline };
 })();
